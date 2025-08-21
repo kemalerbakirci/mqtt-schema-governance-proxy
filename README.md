@@ -256,13 +256,6 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
-
-- **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/mqtt-schema-governance-proxy/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/mqtt-schema-governance-proxy/discussions)
-- **Email**: support@yourorganization.com
-
 ## 🌟 Acknowledgments
 
 - Built with [paho-mqtt](https://github.com/eclipse/paho.mqtt.python) for MQTT connectivity
