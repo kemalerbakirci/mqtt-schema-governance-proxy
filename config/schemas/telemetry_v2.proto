@@ -1,0 +1,170 @@
+syntax = "proto3";
+
+package telemetry;
+
+option go_package = "github.com/mqtt-proxy/telemetry";
+
+// Telemetry message containing device operational data
+message Telemetry {
+  // Schema identifier for message validation
+  string schema_id = 1;
+  
+  // Unique device identifier
+  string device_id = 2;
+  
+  // Timestamp when telemetry was collected (ISO 8601 format)
+  string timestamp = 3;
+  
+  // CPU temperature in Celsius
+  float cpu_temp = 4;
+  
+  // Battery level as percentage (0-100)
+  float battery = 5;
+  
+  // Memory usage information
+  MemoryUsage memory = 6;
+  
+  // Network statistics
+  NetworkStats network = 7;
+  
+  // System status information
+  SystemStatus system = 8;
+  
+  // Location information (optional)
+  Location location = 9;
+  
+  // Additional metadata
+  map<string, string> metadata = 10;
+}
+
+// Memory usage statistics
+message MemoryUsage {
+  // Total memory in bytes
+  uint64 total_bytes = 1;
+  
+  // Used memory in bytes
+  uint64 used_bytes = 2;
+  
+  // Free memory in bytes
+  uint64 free_bytes = 3;
+  
+  // Memory usage percentage (0-100)
+  float usage_percent = 4;
+}
+
+// Network statistics
+message NetworkStats {
+  // Bytes sent since last report
+  uint64 bytes_sent = 1;
+  
+  // Bytes received since last report
+  uint64 bytes_received = 2;
+  
+  // Packets sent since last report
+  uint64 packets_sent = 3;
+  
+  // Packets received since last report
+  uint64 packets_received = 4;
+  
+  // Current connection status
+  ConnectionStatus connection_status = 5;
+  
+  // Signal strength (for wireless connections)
+  int32 signal_strength_dbm = 6;
+}
+
+// Connection status enumeration
+enum ConnectionStatus {
+  UNKNOWN = 0;
+  CONNECTED = 1;
+  DISCONNECTED = 2;
+  CONNECTING = 3;
+  ERROR = 4;
+}
+
+// System status information
+message SystemStatus {
+  // System uptime in seconds
+  uint64 uptime_seconds = 1;
+  
+  // CPU usage percentage (0-100)
+  float cpu_usage_percent = 2;
+  
+  // System load averages
+  LoadAverage load_average = 3;
+  
+  // Disk usage information
+  repeated DiskUsage disk_usage = 4;
+  
+  // Running process count
+  uint32 process_count = 5;
+  
+  // System temperature (if available)
+  float system_temp = 6;
+}
+
+// System load averages
+message LoadAverage {
+  // 1-minute load average
+  float load_1m = 1;
+  
+  // 5-minute load average
+  float load_5m = 2;
+  
+  // 15-minute load average
+  float load_15m = 3;
+}
+
+// Disk usage information
+message DiskUsage {
+  // Mount point or drive identifier
+  string mount_point = 1;
+  
+  // Total disk space in bytes
+  uint64 total_bytes = 2;
+  
+  // Used disk space in bytes
+  uint64 used_bytes = 3;
+  
+  // Available disk space in bytes
+  uint64 available_bytes = 4;
+  
+  // Usage percentage (0-100)
+  float usage_percent = 5;
+  
+  // Filesystem type
+  string filesystem = 6;
+}
+
+// Location information
+message Location {
+  // Geographic coordinates
+  Coordinates coordinates = 1;
+  
+  // Physical location description
+  string description = 2;
+  
+  // Building or facility identifier
+  string building = 3;
+  
+  // Room or area identifier
+  string room = 4;
+  
+  // Floor number
+  int32 floor = 5;
+}
+
+// Geographic coordinates
+message Coordinates {
+  // Latitude in decimal degrees
+  double latitude = 1;
+  
+  // Longitude in decimal degrees
+  double longitude = 2;
+  
+  // Altitude in meters (optional)
+  double altitude = 3;
+  
+  // Accuracy radius in meters (optional)
+  double accuracy = 4;
+}

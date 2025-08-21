@@ -1,0 +1,3 @@
+# This file ensures the quarantine directory is tracked in Git
+# The quarantine directory is used to store invalid messages
+# that fail validation during MQTT message processing

@@ -1,0 +1,238 @@
+# MQTT Schema Governance Proxy Configuration
+# This file defines topic patterns, schema mappings, and validation rules
+
+# Topic patterns that are allowed through the proxy
+# Supports MQTT wildcards: + (single level), # (multi-level)
+topic_patterns:
+  - "sensor/+/temperature"
+  - "sensor/+/humidity"
+  - "device/+/status"
+  - "telemetry/device/+/data"
+  - "alert/+/+/critical"
+  - "system/heartbeat"
+  - "events/#"
+
+# Schema mappings: topic pattern -> schema identifier
+# When a message matches a topic pattern, it will be validated against the specified schema
+schema_mappings:
+  "sensor/+/temperature": "temperature:v1"
+  "sensor/+/humidity": "humidity:v1"
+  "device/+/status": "device_status:v1"
+  "telemetry/device/+/data": "telemetry:v2"
+  "alert/+/+/critical": "alert:v1"
+  "system/heartbeat": "heartbeat:v1"
+  "events/sensor/+": "sensor_event:v1"
+  "events/device/+": "device_event:v1"
+
+# Schema file definitions
+# Maps schema identifiers to their file locations and formats
+schema_files:
+  # Temperature sensor data
+  "temperature:v1":
+    file: "schemas/temperature_v1.json"
+    format: "jsonschema"
+    description: "Temperature sensor reading with device ID and timestamp"
+  
+  # Humidity sensor data
+  "humidity:v1":
+    file: "schemas/humidity_v1.json"
+    format: "jsonschema"
+    description: "Humidity sensor reading"
+  
+  # Device status messages
+  "device_status:v1":
+    file: "schemas/device_status_v1.json"
+    format: "jsonschema"
+    description: "Device operational status and health metrics"
+  
+  # Telemetry data (Protocol Buffers)
+  "telemetry:v2":
+    file: "schemas/telemetry_v2.proto"
+    format: "protobuf"
+    description: "Device telemetry data including CPU, memory, and battery"
+  
+  # Alert messages
+  "alert:v1":
+    file: "schemas/alert_v1.json"
+    format: "jsonschema"
+    description: "Critical alert notifications"
+  
+  # System heartbeat
+  "heartbeat:v1":
+    file: "schemas/heartbeat_v1.json"
+    format: "jsonschema"
+    description: "System heartbeat and health check"
+  
+  # Sensor events
+  "sensor_event:v1":
+    file: "schemas/sensor_event_v1.json"
+    format: "jsonschema"
+    description: "Sensor state change events"
+  
+  # Device events
+  "device_event:v1":
+    file: "schemas/device_event_v1.json"
+    format: "jsonschema"
+    description: "Device lifecycle and operational events"
+
+# MQTT broker configuration
+broker_config:
+  # Upstream broker connection settings
+  host: "localhost"
+  port: 1883
+  username: null  # Will use environment variable MQTT_USERNAME if not set
+  password: null  # Will use environment variable MQTT_PASSWORD if not set
+  use_tls: false
+  keepalive: 60
+  clean_session: true
+  
+  # TLS settings (when use_tls: true)
+  ca_cert: null    # Path to CA certificate file
+  client_cert: null # Path to client certificate file
+  client_key: null  # Path to client private key file
+
+# Proxy-specific configuration
+proxy_config:
+  # Proxy listening settings
+  listen_host: "0.0.0.0"
+  listen_port: 1884
+  
+  # Upstream broker for forwarding valid messages
+  upstream_host: "localhost"
+  upstream_port: 1883
+  
+  # Client identification
+  client_id_prefix: "schema-proxy"
+  
+  # Message processing limits
+  max_message_size: 1048576  # 1MB maximum message size
+  validation_timeout: 5.0    # 5 seconds timeout for validation
+  
+  # Performance settings
+  max_concurrent_validations: 100
+  message_queue_size: 1000
+
+# Validation settings
+validation_config:
+  # Strict mode: reject messages that don't match any pattern
+  strict_mode: true
+  
+  # Schema validation options
+  schema_validation:
+    # Allow additional properties in JSON schemas
+    allow_additional_properties: false
+    
+    # Validate required fields strictly
+    strict_required_fields: true
+    
+    # Maximum nested object depth
+    max_nesting_depth: 10
+  
+  # Topic validation options
+  topic_validation:
+    # Case sensitive topic matching
+    case_sensitive: true
+    
+    # Allow empty topic levels (e.g., "sensor//temperature")
+    allow_empty_levels: false
+    
+    # Maximum topic length
+    max_topic_length: 1024
+
+# Quarantine settings
+quarantine_config:
+  # Database settings
+  database_path: "quarantine.sqlite3"
+  
+  # File storage settings
+  write_files: true
+  quarantine_directory: "quarantine"
+  
+  # Retention settings
+  max_quarantine_size: 10000  # Maximum number of quarantined messages
+  retention_days: 30          # Keep quarantined messages for 30 days
+  
+  # Cleanup settings
+  auto_cleanup: true
+  cleanup_interval_hours: 24
+
+# Metrics and monitoring
+metrics_config:
+  # Prometheus metrics
+  enabled: true
+  port: 9100
+  host: "0.0.0.0"
+  path: "/metrics"
+  
+  # Update intervals
+  update_interval_seconds: 30
+
+# Logging configuration
+logging_config:
+  # Main application log
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  
+  # Audit logging
+  audit_log:
+    enabled: true
+    file: "logs/audit.jsonl"
+    level: "INFO"
+    console_output: false
+  
+  # Performance logging
+  performance_log:
+    enabled: true
+    file: "logs/performance.log"
+    log_slow_operations: true
+    slow_operation_threshold_ms: 100
+
+# Security settings
+security_config:
+  # Rate limiting
+  rate_limiting:
+    enabled: true
+    max_messages_per_second: 1000
+    burst_size: 100
+  
+  # Message size limits
+  max_payload_size: 1048576  # 1MB
+  
+  # Client restrictions
+  client_restrictions:
+    # Block clients with these ID patterns
+    blocked_client_patterns:
+      - "test_*"
+      - "debug_*"
+    
+    # Allow only these client ID patterns (empty = allow all)
+    allowed_client_patterns: []
+
+# Development and testing settings
+development_config:
+  # Enable debug features
+  debug_mode: false
+  
+  # Mock external dependencies
+  mock_broker: false
+  
+  # Test data generation
+  generate_test_data: false
+  test_data_interval_seconds: 10
+
+# Feature flags
+features:
+  # Enable schema hot-reloading
+  schema_hot_reload: true
+  
+  # Enable configuration hot-reloading
+  config_hot_reload: false
+  
+  # Enable message replay from quarantine
+  message_replay: true
+  
+  # Enable topic pattern matching cache
+  pattern_matching_cache: true
+  
+  # Enable validation result caching
+  validation_cache: true
+  validation_cache_ttl_seconds: 300  # 5 minutes

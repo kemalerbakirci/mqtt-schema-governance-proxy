@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "temperature:v1",
+  "title": "Temperature Sensor Reading",
+  "description": "Schema for temperature sensor data messages",
+  "type": "object",
+  "properties": {
+    "schema_id": {
+      "type": "string",
+      "const": "temperature:v1",
+      "description": "Schema identifier for this message type"
+    },
+    "device_id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]+$",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Unique identifier for the temperature sensor device"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the reading was taken"
+    },
+    "value": {
+      "type": "number",
+      "minimum": -273.15,
+      "maximum": 1000,
+      "description": "Temperature value in Celsius"
+    },
+    "unit": {
+      "type": "string",
+      "enum": ["celsius", "fahrenheit", "kelvin"],
+      "default": "celsius",
+      "description": "Temperature unit"
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "room": {
+          "type": "string",
+          "description": "Room or area identifier"
+        },
+        "building": {
+          "type": "string",
+          "description": "Building identifier"
+        },
+        "floor": {
+          "type": "integer",
+          "minimum": -10,
+          "maximum": 200,
+          "description": "Floor number"
+        },
+        "coordinates": {
+          "type": "object",
+          "properties": {
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            }
+          },
+          "required": ["latitude", "longitude"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "description": "Physical location information"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "sensor_type": {
+          "type": "string",
+          "description": "Type of temperature sensor (e.g., DS18B20, DHT22)"
+        },
+        "accuracy": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Sensor accuracy in degrees"
+        },
+        "calibration_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Last calibration date"
+        },
+        "firmware_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Sensor firmware version"
+        }
+      },
+      "additionalProperties": true,
+      "description": "Additional sensor metadata"
+    }
+  },
+  "required": [
+    "schema_id",
+    "device_id",
+    "timestamp",
+    "value"
+  ],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "schema_id": "temperature:v1",
+      "device_id": "temp_sensor_001",
+      "timestamp": "2023-12-07T14:30:00.000Z",
+      "value": 23.5,
+      "unit": "celsius",
+      "location": {
+        "room": "server_room_1",
+        "building": "datacenter_alpha",
+        "floor": 2
+      },
+      "metadata": {
+        "sensor_type": "DS18B20",
+        "accuracy": 0.5,
+        "firmware_version": "1.2.3"
+      }
+    },
+    {
+      "schema_id": "temperature:v1",
+      "device_id": "outdoor_temp_01",
+      "timestamp": "2023-12-07T14:30:00.000Z",
+      "value": -5.2,
+      "unit": "celsius",
+      "location": {
+        "coordinates": {
+          "latitude": 40.7128,
+          "longitude": -74.0060
+        }
+      }
+    }
+  ]
+}
