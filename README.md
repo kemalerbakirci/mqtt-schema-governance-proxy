@@ -84,7 +84,7 @@ graph TB
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/mqtt-schema-governance-proxy.git
+git clone https://github.com/kemalerbakirci/mqtt-schema-governance-proxy.git
 cd mqtt-schema-governance-proxy
 
 # Create virtual environment
